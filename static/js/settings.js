@@ -1,6 +1,6 @@
 "use strict";
 
-const moment = require("moment-timezone");
+const { listTimeZones } = require('timezone-support')
 
 const render_settings_tab = require("../templates/settings_tab.hbs");
 
@@ -71,7 +71,7 @@ exports.build_page = function () {
             page_params.enable_sounds || page_params.enable_stream_audible_notifications,
         zuliprc: "zuliprc",
         botserverrc: "botserverrc",
-        timezones: moment.tz.names(),
+        timezones: listTimeZones(),
         can_create_new_bots: settings_bots.can_create_new_bots(),
         settings_label: exports.settings_label,
         demote_inactive_streams_values: settings_config.demote_inactive_streams_values,

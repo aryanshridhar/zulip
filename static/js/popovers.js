@@ -2,7 +2,7 @@
 
 const ClipboardJS = require("clipboard");
 const confirmDatePlugin = require("flatpickr/dist/plugins/confirmDate/confirmDate");
-const moment = require("moment");
+const {format , parseISO, formatISO,add,set} = require("date-fns");
 
 const render_actions_popover_content = require("../templates/actions_popover_content.hbs");
 const render_mobile_message_buttons_popover = require("../templates/mobile_message_buttons_popover.hbs");
@@ -143,7 +143,7 @@ function get_custom_profile_field_data(user, field, field_types, dateFormat) {
 
     switch (field_type) {
         case field_types.DATE.id:
-            profile_field.value = moment(field_value.value).format(dateFormat);
+            profile_field.value = format(parseISO(field_value.value) , dateFormat);
             break;
         case field_types.USER.id:
             profile_field.id = field.id;
@@ -328,7 +328,7 @@ exports.hide_user_profile = function () {
 exports.show_user_profile = function (user) {
     exports.hide_all();
 
-    const dateFormat = moment.localeData().longDateFormat("LL");
+    const dateFormat = 'MMMM d, yyyy'
     const field_types = page_params.custom_profile_field_types;
     const profile_data = page_params.custom_profile_fields
         .map((f) => get_custom_profile_field_data(user, f, field_types, dateFormat))
@@ -340,7 +340,7 @@ exports.show_user_profile = function (user) {
         profile_data,
         user_avatar: "avatar/" + user.email + "/medium",
         is_me: people.is_current_user(user.email),
-        date_joined: moment(user.date_joined).format(dateFormat),
+        date_joined: format(parseISO(user.date_joined), dateFormat),
         last_seen: buddy_data.user_last_seen_time_status(user.user_id),
         show_email: settings_data.show_email(),
         user_time: people.get_user_time(user.user_id),
@@ -585,7 +585,7 @@ exports.render_actions_remind_popover = function (element, id) {
         ).flatpickr({
             enableTime: true,
             clickOpens: false,
-            defaultDate: moment().format(),
+            defaultDate: formatISO(new Date()),
             minDate: "today",
             plugins: [new confirmDatePlugin({})], // eslint-disable-line new-cap, no-undef
         });
@@ -1107,27 +1107,45 @@ exports.register_click_handlers = function () {
     }
 
     $("body").on("click", ".remind.in_20m", (e) => {
-        const datestr = moment().add(20, "m").format();
+        const datestr = formatISO(add(new Date() , {
+            minutes : 20,
+        }))
         reminder_click_handler(datestr, e);
     });
 
     $("body").on("click", ".remind.in_1h", (e) => {
-        const datestr = moment().add(1, "h").format();
+        const datestr = formatISO(add(new Date() , {
+            hours : 1,
+        }))
         reminder_click_handler(datestr, e);
     });
 
     $("body").on("click", ".remind.in_3h", (e) => {
-        const datestr = moment().add(3, "h").format();
+        const datestr = formatISO(add(new Date() , {
+            hours : 3,
+        }))
         reminder_click_handler(datestr, e);
     });
 
     $("body").on("click", ".remind.tomo", (e) => {
-        const datestr = moment().add(1, "d").hour(9).minute(0).seconds(0).format();
+        const datestr = formatISO(set(add(new Date() , {
+            days : 1,
+          }) , {
+            hours : 9,
+            minutes : 0,
+            seconds : 0
+        }));
         reminder_click_handler(datestr, e);
     });
 
     $("body").on("click", ".remind.nxtw", (e) => {
-        const datestr = moment().add(1, "w").day("monday").hour(9).minute(0).seconds(0).format();
+        const datestr = formatISO(set(add(new Date() , {
+            days : 1,
+          }) , {
+            hours : 9,
+            minutes : 0,
+            seconds : 0
+        }));
         reminder_click_handler(datestr, e);
     });
 
