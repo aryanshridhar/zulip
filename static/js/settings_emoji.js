@@ -66,6 +66,30 @@ function sort_author_full_name(a, b) {
     return -1;
 }
 
+function add_realm_emoji(emoji_name, formData, status_widget, emoji_widget) {
+    channel.post({
+        url: "/json/realm/emoji/" + encodeURIComponent(emoji_name),
+        data: formData,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success() {
+            $("#admin-emoji-status").hide();
+            ui_report.success(i18n.t("Custom emoji added!"), status_widget);
+            $("form.admin-emoji-form input[type='text']").val("");
+            $("#admin_emoji_submit").prop("disabled", false);
+            emoji_widget.clear();
+        },
+        error(xhr) {
+            $("#admin-emoji-status").hide();
+            const errors = JSON.parse(xhr.responseText).msg;
+            xhr.responseText = JSON.stringify({msg: errors});
+            ui_report.error(i18n.t("Failed"), xhr, status_widget);
+            $("#admin_emoji_submit").prop("disabled", false);
+        },
+    });
+}
+
 exports.populate_emoji = function () {
     if (!meta.loaded) {
         return;
@@ -186,27 +210,7 @@ exports.set_up = function () {
             for (const [i, file] of Array.prototype.entries.call($("#emoji_file_input")[0].files)) {
                 formData.append("file-" + i, file);
             }
-            channel.post({
-                url: "/json/realm/emoji/" + encodeURIComponent(emoji.name),
-                data: formData,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success() {
-                    $("#admin-emoji-status").hide();
-                    ui_report.success(i18n.t("Custom emoji added!"), emoji_status);
-                    $("form.admin-emoji-form input[type='text']").val("");
-                    $("#admin_emoji_submit").prop("disabled", false);
-                    emoji_widget.clear();
-                },
-                error(xhr) {
-                    $("#admin-emoji-status").hide();
-                    const errors = JSON.parse(xhr.responseText).msg;
-                    xhr.responseText = JSON.stringify({msg: errors});
-                    ui_report.error(i18n.t("Failed"), xhr, emoji_status);
-                    $("#admin_emoji_submit").prop("disabled", false);
-                },
-            });
+            add_realm_emoji(emoji.name, formData, emoji_status, emoji_widget);
         });
 };
 
