@@ -1,5 +1,6 @@
 "use strict";
 
+const emoji_codes = require("../generated/emoji/emoji_codes.json");
 const emoji = require("../shared/js/emoji");
 const render_admin_emoji_list = require("../templates/admin_emoji_list.hbs");
 const render_settings_emoji_settings_tip = require("../templates/settings/emoji_settings_tip.hbs");
@@ -88,6 +89,10 @@ function add_realm_emoji(emoji_name, formData, status_widget, emoji_widget) {
             $("#admin_emoji_submit").prop("disabled", false);
         },
     });
+}
+
+function is_default_emoji(emoji_name) {
+    return emoji_codes.names.includes(emoji_name);
 }
 
 exports.populate_emoji = function () {
@@ -210,7 +215,22 @@ exports.set_up = function () {
             for (const [i, file] of Array.prototype.entries.call($("#emoji_file_input")[0].files)) {
                 formData.append("file-" + i, file);
             }
-            add_realm_emoji(emoji.name, formData, emoji_status, emoji_widget);
+
+            if (is_default_emoji(emoji.name)) {
+                if (!overlays.is_modal_open()) {
+                    $("#admin_emoji_submit").prop("disabled", false);
+                    overlays.open_modal("#emoji_warning_modal");
+                }
+
+                $("#do_accept_button").on("click", () => {
+                    if (overlays.is_modal_open()) {
+                        overlays.close_modal("#emoji_warning_modal");
+                    }
+                    add_realm_emoji(emoji.name, formData, emoji_status, emoji_widget);
+                });
+            } else {
+                add_realm_emoji(emoji.name, formData, emoji_status, emoji_widget);
+            }
         });
 };
 

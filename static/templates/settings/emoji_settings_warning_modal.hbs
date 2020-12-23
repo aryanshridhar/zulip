@@ -1,0 +1,14 @@
+<div id="emoji_warning_modal" class="modal modal-bg hide fade" tabindex="-1" role="dialog" aria-labelledby="emoji_warning_modal_label" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="{{t 'Confirm emoji ?' }}"><span aria-hidden="true">&times;</span></button>
+        <h3 id="emoji_warning_modal_label">{{t "Confirm emoji ?" }}</h3>
+    </div>
+    <div class="modal-body">
+        <p>{{#tr this}}There already exists a default emoji.{{/tr}}</p>
+        <p>{{t "This leads to overriding of custom emoji over the default emoji. Do you wish to continue ?" }}</p>
+    </div>
+    <div class="modal-footer">
+        <button class="button rounded" data-dismiss="modal">{{t "Go back" }}</button>
+        <button class="button rounded btn-warning" id="do_accept_button">{{t "Accept" }}</button>
+    </div>
+</div>
