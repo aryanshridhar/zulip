@@ -140,6 +140,25 @@ exports.enter_fixed_mode = function () {
     });
 };
 
+exports.add_new_status = function (new_status_text) {
+    user_status.server_update({
+        status_text: new_status_text,
+        success() {
+            feedback_widget.show({
+                populate(container) {
+                    const rendered_msg = marked("Sucessfully updated status message.");
+                    container.html(rendered_msg);
+                },
+                on_undo() {
+                    user_status_ui.open_overlay();
+                },
+                title_text: i18n.t("Status update"),
+                undo_button_text: i18n.t("View"),
+            });
+        },
+    });
+};
+
 exports.process = function (message_content) {
     const content = message_content.trim();
 
@@ -183,6 +202,12 @@ exports.process = function (message_content) {
 
     if (content === "/settings") {
         hashchange.go_to_location("settings/your-account");
+        return true;
+    }
+
+    if (content.startsWith("/status ")) {
+        const status_text = content.slice("/status ".length, content.length);
+        exports.add_new_status(status_text);
         return true;
     }
 

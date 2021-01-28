@@ -395,6 +395,10 @@ exports.slash_commands = [
         name: "settings",
     },
     {
+        text: i18n.t("/status My new status (Add new status)"),
+        name: "status",
+    },
+    {
         text: i18n.t("/todo (Create a todo list)"),
         name: "todo",
     },
