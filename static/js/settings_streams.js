@@ -125,10 +125,24 @@ exports.build_page = function () {
     $(".default-stream-form").on("click", "#do_submit_stream", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const default_stream_input = $(".create_default_stream");
-        make_stream_default(stream_data.get_stream_id(default_stream_input.val()));
+        const default_stream_input = $(".create_default_stream").val().trim();
+        const default_stream_status = $("#admin-default-stream-status");
+        const stream_id = stream_data.get_stream_id(default_stream_input);
+
+        if (!(stream_id === undefined)) {
+            if (stream_data.get_default_stream_ids().includes(stream_id)) {
+                ui_report.client_error(
+                    i18n.t("Failed: Default Stream already exists."),
+                    default_stream_status,
+                );
+            } else {
+                make_stream_default(stream_id);
+            }
+        } else {
+            ui_report.client_error(i18n.t("Failed: Stream doesn't exists."), default_stream_status);
+        }
         // Clear value inside input box
-        default_stream_input[0].value = "";
+        $(".create_default_stream").val("");
     });
 
     $("body").on("click", ".default_stream_row .remove-default-stream", function (e) {
