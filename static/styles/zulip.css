@@ -2238,6 +2238,10 @@ div.topic_edit_spinner .loading_indicator_spinner {
     max-height: 60vh;
 }
 
+.move-topic-modal {
+    overflow: visible;
+}
+
 #invitee_emails {
     min-height: 40px;
     max-height: 300px;

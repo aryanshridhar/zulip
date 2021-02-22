@@ -372,9 +372,12 @@ exports.register_click_handlers = function () {
         build_starred_messages_popover,
     );
 
-    $("body").on("click", ".move-topic-dropdown .list_item", (e) => {
+    $("body").on("click keypress", ".move-topic-dropdown .list_item", (e) => {
         e.preventDefault();
 
+        if (e.type === "keypress" && e.which !== 13) {
+            return;
+        }
         const stream_name = stream_data.maybe_get_stream_name(
             Number.parseInt(stream_widget.value(), 10),
         );
