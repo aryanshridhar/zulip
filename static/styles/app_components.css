@@ -1,7 +1,7 @@
 /* Reusable, object-oriented CSS base components for the Zulip webapp
    (not included in the portico CSS) */
 
-.flex {
+   .flex {
     width: 100%;
     height: 100%;
     display: flex;
@@ -411,7 +411,7 @@
 
 .stream_header_colorblock {
     @extend .stream-selection-header-colorblock;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
     z-index: 1;
 }
 

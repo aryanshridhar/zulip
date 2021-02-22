@@ -14,6 +14,8 @@ let current_stream_sidebar_elem;
 let current_topic_sidebar_elem;
 let all_messages_sidebar_elem;
 let starred_messages_sidebar_elem;
+let stream_widget;
+let stream_header_colorblock;
 
 function get_popover_menu_items(sidebar_elem) {
     if (!sidebar_elem) {
@@ -306,26 +308,29 @@ function build_move_topic_to_stream_popover(e, current_stream_id, topic_name) {
     // streams in the future.
     const current_stream_name = stream_data.maybe_get_stream_name(current_stream_id);
     const args = {
-        available_streams,
         topic_name,
         current_stream_id,
-        current_stream_name,
         notify_new_thread: message_edit.notify_new_thread_default,
         notify_old_thread: message_edit.notify_old_thread_default,
+    };
+    const streams_list = stream_data.subscribed_subs().map((stream) => ({
+        name: stream.name,
+        value: stream.stream_id.toString(),
+    }));
+    const opts = {
+        widget_name: "select_stream",
+        data: streams_list,
+        default_text: i18n.t("No streams"),
+        value: current_stream_id,
     };
 
     exports.hide_topic_popover();
 
     $("#move-a-topic-modal-holder").html(render_move_topic_to_stream(args));
 
-    const stream_header_colorblock = $(".topic_stream_edit_header").find(
-        ".stream_header_colorblock",
-    );
+    stream_widget = dropdown_list_widget(opts);
+    stream_header_colorblock = $(".topic_stream_edit_header").find(".stream_header_colorblock");
     ui_util.decorate_stream_bar(current_stream_name, stream_header_colorblock, false);
-    $("#select_stream_id").on("change", function () {
-        const stream_name = stream_data.maybe_get_stream_name(Number.parseInt(this.value, 10));
-        ui_util.decorate_stream_bar(stream_name, stream_header_colorblock, false);
-    });
 
     $("#move_topic_modal").modal("show");
 }
@@ -366,6 +371,15 @@ exports.register_click_handlers = function () {
         ".starred-messages-sidebar-menu-icon",
         build_starred_messages_popover,
     );
+
+    $("body").on("click", ".move-topic-dropdown .list_item", (e) => {
+        e.preventDefault();
+
+        const stream_name = stream_data.maybe_get_stream_name(
+            Number.parseInt(stream_widget.value(), 10),
+        );
+        ui_util.decorate_stream_bar(stream_name, stream_header_colorblock, false);
+    });
 
     exports.register_stream_handlers();
     exports.register_topic_handlers();
@@ -611,7 +625,8 @@ exports.register_topic_handlers = function () {
                 .map(({name, value}) => [name, value]),
         );
 
-        const {old_topic_name, select_stream_id} = params;
+        const {old_topic_name} = params;
+        const select_stream_id = stream_widget.value();
         let {
             current_stream_id,
             new_topic_name,

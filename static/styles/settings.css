@@ -640,10 +640,19 @@ input[type="checkbox"] {
 
 .add-new-emoji-box,
 .add-new-user-group-box,
+.move-topic-stream-box,
 .add-new-default-stream-box {
     input[type="text"] {
         padding: 6px;
     }
+
+    #stream_name_label {
+        padding-bottom: 2px;
+    }
+}
+
+.move-topic-stream-box {
+    margin-bottom: 15px;
 }
 
 .add-new-emoji-box #emoji-file-name {
