@@ -77,8 +77,14 @@ const DropdownListWidget = function (opts) {
             `#${CSS.escape(opts.container_id)} .dropdown-search > input[type=text]`,
         );
         const dropdown_toggle = $(`#${CSS.escape(opts.container_id)} .dropdown-toggle`);
+        const get_data = (value) => {
+            if (!value || value === opts.null_value) {
+                return opts.data;
+            }
+            return opts.data.filter((x) => x.value !== opts.value.toString());
+        };
 
-        ListWidget.create(dropdown_list_body, opts.data, {
+        ListWidget.create(dropdown_list_body, get_data(opts.value), {
             name: `${CSS.escape(opts.widget_name)}_list`,
             modifier(item) {
                 return render_dropdown_list({item});
